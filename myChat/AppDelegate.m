@@ -19,7 +19,7 @@
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    
+    MyLog(@"哈哈哈哈哈哈哈哈");
     if (![[TCUserManager sharedTCUserManager] isLogin]) {
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
         UIViewController *viewCtrl = [storyboard instantiateViewControllerWithIdentifier:@"TCWelcomeCtrl"];
