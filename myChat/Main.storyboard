@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6245" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="TAq-rx-KVf">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="TAq-rx-KVf">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
     </dependencies>
     <scenes>
         <!--Welcome Ctrl-->
@@ -16,7 +16,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7Ty-kC-58g">
+                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7Ty-kC-58g">
                                 <rect key="frame" x="179" y="370" width="242" height="45"/>
                                 <state key="normal" backgroundImage="sign in">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -467,7 +467,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4Pj-h4-v6X" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2935" y="776"/>
+            <point key="canvasLocation" x="3000.5" y="809.5"/>
         </scene>
         <!--Sign up Ctrl-->
         <scene sceneID="lTE-os-322">
@@ -703,8 +703,8 @@
                     </tabBar>
                     <connections>
                         <segue destination="h7N-ar-47V" kind="relationship" relationship="viewControllers" id="eaT-8G-tab"/>
-                        <segue destination="CT9-Zs-gkX" kind="relationship" relationship="viewControllers" id="bbE-P7-k7V"/>
                         <segue destination="emc-5B-b1K" kind="relationship" relationship="viewControllers" id="ilQ-Wa-4Ih"/>
+                        <segue destination="CT9-Zs-gkX" kind="relationship" relationship="viewControllers" id="bbE-P7-k7V"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="NJN-df-rN1" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -813,7 +813,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="RTT-5P-HcB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2042.5" y="1641.5"/>
+            <point key="canvasLocation" x="2052.5" y="1649.5"/>
         </scene>
         <!--Title-->
         <scene sceneID="FoM-y3-Lq8">
@@ -912,7 +912,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kPQ-gO-sB0" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2276.5" y="2412.5"/>
+            <point key="canvasLocation" x="2294.5" y="2452.5"/>
         </scene>
         <!--好友资料-->
         <scene sceneID="rAw-P1-eAv">
@@ -973,7 +973,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kPU-fC-Hlv" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2636.5" y="1641.5"/>
+            <point key="canvasLocation" x="2624.5" y="1649.5"/>
         </scene>
         <!--我的-->
         <scene sceneID="HHX-tq-bXp">
@@ -1234,7 +1234,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gde-dB-JXD" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1517" y="1642"/>
+            <point key="canvasLocation" x="1498.5" y="1649.5"/>
         </scene>
         <!--我的-->
         <scene sceneID="UeQ-gd-XcQ">

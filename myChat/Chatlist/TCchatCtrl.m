@@ -145,7 +145,9 @@
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     //获取用户信息
-    _currentUser = [_resultsCtrl objectAtIndexPath:indexPath];
+    NSString *jid=[_chatarray objectAtIndex:indexPath.row];
+    XMPPMessageArchiving_Message_CoreDataObject *message=(XMPPMessageArchiving_Message_CoreDataObject *)[_chatlist objectForKey:jid];
+    _currentUser = message;
     
     MyLog(@"~~~\n barejid:%@   streamBarejid:%@", _currentUser.bareJidStr, _currentUser.streamBareJidStr);
     
