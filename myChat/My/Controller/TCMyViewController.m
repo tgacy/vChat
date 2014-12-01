@@ -75,6 +75,12 @@
 - (void)didLogoutClicked:(UIButton *)sender
 {
     MyLog(@"~~~退出登录~~~");
+    //调到登录页面
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    UIViewController *viewCtrl = [storyboard instantiateViewControllerWithIdentifier:@"TCWelcomeCtrl"];
+    [UIApplication sharedApplication].keyWindow.rootViewController = viewCtrl;
+    //退出登录
+    [[TCServerManager sharedTCServerManager] logout];
 }
 
 #pragma mark - UITableView代理方法
