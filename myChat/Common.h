@@ -29,7 +29,7 @@ typedef NS_ENUM(NSUInteger, TCRequestErrorCode) {
 #define kKeyChainIdentifier @"userInfo"
 
 //@"vpn.wuqiong.tk"
-#define kHostName  @"luojiahui-2.lan"   //主机名
+#define kHostName  @"vpn.wuqiong.tk"   //主机名
 #define kOnlineType  @"available"       //上线
 #define kOfflineType  @"unavailable"    //下线
 
