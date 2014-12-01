@@ -161,7 +161,11 @@
         if(photo != nil){
             chatCtrl.bareImage = [UIImage imageWithData:photo];
         }
-        chatCtrl.myImage = [TCUserManager sharedTCUserManager].user.photo;
+        //取出我的照片
+        NSString *myStr = [TCUserManager sharedTCUserManager].user.username;
+        XMPPJID *myJID = [XMPPJID jidWithString:myStr];
+        NSData *myPhoto = [[[TCServerManager sharedTCServerManager] avatarModule] photoDataForJID:myJID];
+        chatCtrl.myImage = [UIImage imageWithData:myPhoto];
     }
 }
 

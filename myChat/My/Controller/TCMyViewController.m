@@ -30,9 +30,9 @@
     [self setFooterView];
 }
 
-#pragma mark - 设置头部, 底部视图
-- (void)setHeaderView
+- (void)viewWillAppear:(BOOL)animated
 {
+    BaseHeadInfoView *headView = (BaseHeadInfoView *)_myTableView.tableHeaderView;
     XMPPJID *jid = [XMPPJID jidWithString:[TCUserManager sharedTCUserManager].user.username];
     
     NSData *photoData = [[[TCServerManager sharedTCServerManager] avatarModule] photoDataForJID:jid];
@@ -42,11 +42,15 @@
     }else{
         headImg = [UIImage imageNamed:kDefaultHeadImage];
     }
-    
-    BaseHeadInfoView *headView = [[BaseHeadInfoView alloc] initWithFrame:CGRectMake(0, 0, _myTableView.frame.size.width, headImg.size.height + 2 * kHeadCellMagin)];
     headView.headImg.image = headImg;
     headView.nameLabel.text = jid.user;
     headView.jidStrLabel.text = [@"JID: " stringByAppendingString:[jid full]];
+}
+
+#pragma mark - 设置头部, 底部视图
+- (void)setHeaderView
+{
+    BaseHeadInfoView *headView = [[BaseHeadInfoView alloc] initWithFrame:CGRectMake(0, 0, _myTableView.frame.size.width, kDefaultHeadHeight + 2 * kHeadCellMagin)];
     headView.backgroundColor = UIColor(236, 236, 236, 0.5);
     _myTableView.tableHeaderView = headView;
     

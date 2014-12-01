@@ -35,10 +35,9 @@
 #pragma mark - 布局子视图
 - (void)layoutSubviews
 {
-    CGSize size = [_headImg.image size];
     CGRect rect = self.bounds;
     
-    _headImg.frame = CGRectMake(kHeadCellMagin, kHeadCellMagin, size.width, size.height);
+    _headImg.frame = CGRectMake(kHeadCellMagin, kHeadCellMagin, kDefaultHeadWidth, kDefaultHeadHeight);
     
     CGFloat x = CGRectGetMaxX(_headImg.frame) + kHeadCellMagin;
     CGFloat width = rect.size.width - x;

@@ -116,7 +116,12 @@
 #pragma mark - 点击发送消息按钮
 - (void)didSendMsgClicked:(UIButton *)sender
 {
-    TCchatListCtrl *controller = [[TCchatListCtrl alloc] init];
+    [self performSegueWithIdentifier:@"sendMsg" sender:self];
+}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    TCchatListCtrl *controller = (TCchatListCtrl *)segue.destinationViewController;
     
     controller.bareJidStr = [_jid full];
     // 取出对话方的头像数据
@@ -128,9 +133,6 @@
     XMPPJID *myJID = [XMPPJID jidWithString:myStr];
     NSData *myPhoto = [[[TCServerManager sharedTCServerManager] avatarModule] photoDataForJID:myJID];
     controller.myImage = [UIImage imageWithData:myPhoto];
-    
-    //弹出到聊天页面
-    [self.navigationController pushViewController:controller animated:YES];
 }
 
 #pragma mark - UITableView代理方法

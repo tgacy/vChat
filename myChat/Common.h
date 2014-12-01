@@ -75,5 +75,7 @@ return _instance; \
 //颜色
 #define UIColor(r, g, b, a) [UIColor colorWithRed:r / 255.0 green:g / 255.0 blue:b / 255.0 alpha:a];
 
-//默认头像
+//默认头像, 高度
 #define kDefaultHeadImage @"head"
+#define kDefaultHeadWidth 66
+#define kDefaultHeadHeight 66
