@@ -32,6 +32,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    MyLog(@"%s",__func__);
+
     _chatlist=[[TCUserManager sharedTCUserManager] getChatlistDictionary];
     _chatarray=[[TCUserManager sharedTCUserManager] getChatlistArray];
     if (_resultsCtrl == nil)

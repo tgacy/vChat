@@ -8,9 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "BaseViewController.h"
+
 @class NSFetchedResultsController;
 
-@interface TCFriendsListViewController : UIViewController
+@interface TCFriendsListViewController : BaseViewController
 
 @property (strong, nonatomic) void (^didConfirmAddFriend)(NSFetchedResultsController *controller);
 
