@@ -292,7 +292,7 @@
                         <viewControllerLayoutGuide type="bottom" id="eBJ-ce-4RD"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="OHC-oo-McD">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="X8y-fE-PUo">
@@ -471,6 +471,11 @@
                                             <action selector="sendeMessager:" destination="zG1-gj-L7O" eventType="touchUpInside" id="D65-mW-Mb4"/>
                                         </connections>
                                     </button>
+                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="点击输入文字" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="tTZ-SA-TCG">
+                                        <rect key="frame" x="16" y="10" width="509" height="30"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <textInputTraits key="textInputTraits"/>
+                                    </textField>
                                 </subviews>
                                 <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
                                 <connections>
