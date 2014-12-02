@@ -75,8 +75,6 @@
     // 3 隐藏输入文本框
     _inputText.hidden = button.tag;
     
-    [self setButton:_emoteButton imgName:@"ToolViewEmotion" imgHLName:@"ToolViewEmotionHL"];
-    
     // 4. 判断当前输入状态，如果是文本输入，显示录音按钮，同时关闭键盘
     if (button.tag) {
         // 1) 关闭键盘
@@ -84,6 +82,7 @@
         
         // 2) 切换按钮图标，显示键盘图标
         [self setButton:button imgName:@"ToolViewInputText" imgHLName:@"ToolViewInputTextHL"];
+        [self setButton:_emoteButton imgName:@"ToolViewEmotion" imgHLName:@"ToolViewEmotionHL"];
     } else {
         // 打开文本录入
         // 1) 切换按钮图标，显示录音图标
@@ -93,6 +92,7 @@
         [_inputText becomeFirstResponder];
         // 显示系统默认键盘
         [_inputText setInputView:nil];
+        _emoteButton.tag = !_emoteButton.tag;
         [_inputText reloadInputViews];
     }
 }
