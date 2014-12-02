@@ -65,7 +65,7 @@
     }
     
     // 更新或保存电子名片
-    [[[TCServerManager sharedTCServerManager] vCardModule] updateMyvCardTemp:myCard];
+    //[[[TCServerManager sharedTCServerManager] vCardModule] updateMyvCardTemp:myCard];
     
     // 使用myCard中的信息设置界面UI显示
     // 1) 照片

@@ -33,7 +33,11 @@
     NSDictionary *keyBoardInfo = notification.userInfo;
     UIView *firstResponder = [self.view firstResponder];
     if(firstResponder){
-        CGFloat viewY = CGRectGetMaxY(firstResponder.frame);
+        CGRect frame = firstResponder.frame;
+        if(firstResponder.superview != self.view){
+            frame = [firstResponder convertRect:frame toView:self.view];
+        }
+        CGFloat viewY = CGRectGetMaxY(frame);
         CGFloat keyBoardY = [keyBoardInfo[@"UIKeyboardFrameEndUserInfoKey"] CGRectValue].origin.y;
         CGFloat delta = keyBoardY - viewY;
         if(delta < 0){

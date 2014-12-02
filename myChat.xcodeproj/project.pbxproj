@@ -192,6 +192,8 @@
 		1877C0741A2C684B00E8E129 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1877C0731A2C684B00E8E129 /* Main.storyboard */; };
 		1877C0761A2C6AD000E8E129 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1877C0751A2C6AD000E8E129 /* libxml2.dylib */; };
 		1877C0781A2C6AF800E8E129 /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1877C0771A2C6AF800E8E129 /* libresolv.dylib */; };
+		18E7C4E01A2DA93300D94D72 /* TCInputTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E7C4DF1A2DA93300D94D72 /* TCInputTextView.m */; };
+		18E7C4E31A2DA9CD00D94D72 /* TCEmoteSelectorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 18E7C4E21A2DA9CD00D94D72 /* TCEmoteSelectorView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -585,6 +587,10 @@
 		1877C0731A2C684B00E8E129 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		1877C0751A2C6AD000E8E129 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		1877C0771A2C6AF800E8E129 /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = usr/lib/libresolv.dylib; sourceTree = SDKROOT; };
+		18E7C4DE1A2DA93300D94D72 /* TCInputTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCInputTextView.h; sourceTree = "<group>"; };
+		18E7C4DF1A2DA93300D94D72 /* TCInputTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCInputTextView.m; sourceTree = "<group>"; };
+		18E7C4E11A2DA9CD00D94D72 /* TCEmoteSelectorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCEmoteSelectorView.h; sourceTree = "<group>"; };
+		18E7C4E21A2DA9CD00D94D72 /* TCEmoteSelectorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCEmoteSelectorView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -701,6 +707,10 @@
 				1877BDF41A2B66E300E8E129 /* TCchatListCell.m */,
 				1877BDF51A2B66E300E8E129 /* TCchatListCtrl.h */,
 				1877BDF61A2B66E300E8E129 /* TCchatListCtrl.m */,
+				18E7C4DE1A2DA93300D94D72 /* TCInputTextView.h */,
+				18E7C4DF1A2DA93300D94D72 /* TCInputTextView.m */,
+				18E7C4E11A2DA9CD00D94D72 /* TCEmoteSelectorView.h */,
+				18E7C4E21A2DA9CD00D94D72 /* TCEmoteSelectorView.m */,
 			);
 			path = Chatlist;
 			sourceTree = "<group>";
@@ -1887,6 +1897,7 @@
 				1877BFD01A2B66E400E8E129 /* UIView+firstResponder.m in Sources */,
 				1877C0061A2B66E400E8E129 /* XMPPRoomCoreDataStorage.m in Sources */,
 				1877BFBD1A2B66E400E8E129 /* BaseFooterView.m in Sources */,
+				18E7C4E01A2DA93300D94D72 /* TCInputTextView.m in Sources */,
 				1877C05E1A2B66E400E8E129 /* DDMultiFormatter.m in Sources */,
 				1877C00C1A2B66E400E8E129 /* XMPPRoomOccupantHybridMemoryStorageObject.m in Sources */,
 				1877BFC21A2B66E400E8E129 /* TCchatCtrl.m in Sources */,
@@ -1966,6 +1977,7 @@
 				1877C0361A2B66E400E8E129 /* XMPPMessageArchivingCoreDataStorage.m in Sources */,
 				1877C0411A2B66E400E8E129 /* XMPPAutoPing.m in Sources */,
 				1877C02C1A2B66E400E8E129 /* XMPPTransports.m in Sources */,
+				18E7C4E31A2DA9CD00D94D72 /* TCEmoteSelectorView.m in Sources */,
 				1877BFF21A2B66E400E8E129 /* XMPPGoogleSharedStatus.m in Sources */,
 				1877C06E1A2B66E400E8E129 /* TCMyInfoViewController.m in Sources */,
 				1877C0351A2B66E400E8E129 /* XMPPMessageArchiving_Message_CoreDataObject.m in Sources */,
@@ -2218,6 +2230,7 @@
 				1877BDE01A2B667400E8E129 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		1877BDE11A2B667400E8E129 /* Build configuration list for PBXNativeTarget "myChatTests" */ = {
 			isa = XCConfigurationList;
@@ -2226,6 +2239,7 @@
 				1877BDE31A2B667400E8E129 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 

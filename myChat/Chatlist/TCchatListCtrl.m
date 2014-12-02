@@ -16,7 +16,7 @@
 
 #import "NSDate+Utilities.h"
 
-@interface TCchatListCtrl ()<UITableViewDelegate,UITableViewDataSource,NSFetchedResultsControllerDelegate>
+@interface TCchatListCtrl ()<UITableViewDelegate,UITableViewDataSource, NSFetchedResultsControllerDelegate>
 {
     NSFetchedResultsController *_fetchedResultController;
     NSInteger _numberOfRows;
@@ -87,23 +87,11 @@
     }
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    
-}
-
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-    self.tabBarController.tabBar.hidden=NO;
-}
+//- (void)viewWillDisappear:(BOOL)animated
+//{
+//    [super viewWillDisappear:animated];
+//    self.tabBarController.tabBar.hidden=NO;
+//}
 
 - (IBAction)sendeMessager:(UIButton *)sender
 {
@@ -175,6 +163,5 @@
         return 56 + rect.size.height + 14;
     }
 }
-
 
 @end
