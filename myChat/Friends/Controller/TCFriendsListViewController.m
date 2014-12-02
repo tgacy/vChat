@@ -13,7 +13,7 @@
 #import "TCAddFriendViewController.h"
 #import "SVProgressHUD.h"
 
-#define kFriendCellHeight 71.0f
+#define kFriendCellHeight 50.0f
 
 @interface TCFriendsListViewController () <NSFetchedResultsControllerDelegate, UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate>
 {
