@@ -12,7 +12,7 @@
 
 @class NSFetchedResultsController;
 
-@interface TCFriendsListViewController : BaseViewController
+@interface TCFriendsListViewController : UIViewController
 
 @property (strong, nonatomic) void (^didConfirmAddFriend)(NSFetchedResultsController *controller);
 

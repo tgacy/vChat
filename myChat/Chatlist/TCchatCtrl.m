@@ -49,13 +49,10 @@
         
         NSArray *sortDescriptors = [NSArray arrayWithObjects:sd, nil];
         
-//        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"bareJidStr=%@", _user.jidStr];
-        
         //数据请求
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
         [fetchRequest setEntity:entity];
         [fetchRequest setSortDescriptors:sortDescriptors];
-//        [fetchRequest setPredicate:predicate];
         [fetchRequest setFetchBatchSize:10];
         
         _resultsCtrl = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
@@ -64,20 +61,13 @@
                                                                                   cacheName:nil];
         [_resultsCtrl setDelegate:self];
         
-        
         NSError *error = nil;
         //开始请求数据
         if (![_resultsCtrl performFetch:&error])
         {
             MyLog(@"Error performing fetch: %@", error);
         }
-        
     }
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -109,11 +99,9 @@
         }
     }
     [_chatTableview reloadData];
-
 }
 
 #pragma mark - UITableviewDatasource
-
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     return _chatlist.count;

@@ -386,7 +386,7 @@ single_implementation(TCServerManager)
 //接收到信息请求
 - (BOOL)xmppStream:(XMPPStream *)sender didReceiveIQ:(XMPPIQ *)iq
 {
-    MyLog(@"Received IQ: %@", iq);
+    //MyLog(@"Received IQ: %@", iq);
     return YES;
 }
 
@@ -416,7 +416,7 @@ single_implementation(TCServerManager)
 //发送信息请求成功
 - (void)xmppStream:(XMPPStream *)sender didSendIQ:(XMPPIQ *)iq
 {
-    MyLog(@"Send IQ: %@", iq);
+    //MyLog(@"Send IQ: %@", iq);
 }
 
 //发送消息成功
