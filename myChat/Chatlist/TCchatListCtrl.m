@@ -75,13 +75,6 @@
     [self controllerDidChangeContent:nil];
 }
 
-//#pragma mark - 视图即将显示
-//- (void)viewWillAppear:(BOOL)animated
-//{
-//    [super viewWillAppear:animated];
-//    [self scrollToBottom];
-//}
-
 #pragma mark - 数据集改变
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
 {
