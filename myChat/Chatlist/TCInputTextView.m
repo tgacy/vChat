@@ -87,6 +87,7 @@
         // 打开文本录入
         // 1) 切换按钮图标，显示录音图标
         [self setButton:button imgName:@"ToolViewInputVoice" imgHLName:@"ToolViewInputVoiceHL"];
+        
         // 2) 打开键盘
         [_inputText becomeFirstResponder];
         // 显示系统默认键盘

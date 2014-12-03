@@ -71,27 +71,34 @@
         {
             MyLog(@"Error performing fetch: %@", error);
         }
-        
     }
-    
+    [self controllerDidChangeContent:nil];
 }
 
+//#pragma mark - 视图即将显示
+//- (void)viewWillAppear:(BOOL)animated
+//{
+//    [super viewWillAppear:animated];
+//    [self scrollToBottom];
+//}
+
+#pragma mark - 数据集改变
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
 {
     [_chatListTableview reloadData];
     
     //尝试滚动到最底下
+    [self scrollToBottom];
+}
+
+#pragma - mark 滚动到底部
+- (void)scrollToBottom
+{
     if (_numberOfRows) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:_numberOfRows - 1 inSection:0];
         [_chatListTableview scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
     }
 }
-
-//- (void)viewWillDisappear:(BOOL)animated
-//{
-//    [super viewWillDisappear:animated];
-//    self.tabBarController.tabBar.hidden=NO;
-//}
 
 - (IBAction)sendeMessager:(UIButton *)sender
 {
