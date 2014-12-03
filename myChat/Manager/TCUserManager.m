@@ -9,6 +9,10 @@
 #import "TCUserManager.h"
 #import "KeychainItemWrapper.h"
 
+@interface TCUserManager()
+
+@end
+
 @implementation TCUserManager
 
 //单例实现
@@ -23,12 +27,6 @@ single_implementation(TCUserManager)
         KeychainItemWrapper *itemWrapper = [self keychainItemWrapper];
         _user.username = [itemWrapper objectForKey:(__bridge id)(kSecAttrAccount)];
         _user.password = [itemWrapper objectForKey:(__bridge id)(kSecValueData)];
-        NSString *path1=[NSHomeDirectory() stringByAppendingPathComponent:@"Documents/chatlistDictionary"];
-        if (![[NSFileManager defaultManager] fileExistsAtPath:path1]) {
-            NSMutableDictionary *dictionary=[NSMutableDictionary dictionary];
-            NSMutableArray *array=[NSMutableArray array];
-            [self saveChatlistWitharray:array andDictionary:dictionary];
-        }
     }
     
     return self;
@@ -70,25 +68,29 @@ single_implementation(TCUserManager)
 //存储消息列表
 - (void)saveChatlistWitharray:(NSMutableArray *)array andDictionary:(NSMutableDictionary*)dictionary
 {
-    NSString *path=[NSHomeDirectory() stringByAppendingPathComponent:@"Documents/chatlistArray"];
-    [array writeToFile:path atomically:YES];
-    NSString *path1=[NSHomeDirectory() stringByAppendingPathComponent:@"Documents/chatlistDictionary"];
-    [dictionary writeToFile:path1 atomically:YES];
-    
+    [[NSUserDefaults standardUserDefaults]setObject:array forKey:@"listArry"];
+    [[NSUserDefaults standardUserDefaults]setObject:dictionary forKey:@"listDictionary"];
 }
 
 //获取消息列表
 - (NSMutableDictionary *)getChatlistDictionary
 {
-    NSString *path1=[NSHomeDirectory() stringByAppendingPathComponent:@"Documents/chatlistDictionary"];
-    NSMutableDictionary *dictionary=[NSMutableDictionary dictionaryWithContentsOfFile:path1];
+    NSMutableDictionary *dictionary=[[NSUserDefaults standardUserDefaults]objectForKey:@"listDictionary"];
+    if (dictionary==nil) {
+        NSMutableDictionary *dict=[NSMutableDictionary dictionary];
+        [[NSUserDefaults standardUserDefaults]setObject:dict forKey:@"listDictionary"];
+        return dict;
+    }
     return dictionary;
 }
-
 - (NSMutableArray *)getChatlistArray
 {
-    NSString *path=[NSHomeDirectory() stringByAppendingPathComponent:@"Documents/chatlistArray"];
-    NSMutableArray *array=[NSMutableArray arrayWithContentsOfFile:path];
+    NSMutableArray *array=[[NSUserDefaults standardUserDefaults]objectForKey:@"listArry"];
+    if (array==nil) {
+        NSMutableArray *arr=[NSMutableArray array];
+        [[NSUserDefaults standardUserDefaults]setObject:arr forKey:@"listArry"];
+        return arr;
+    }
     return array;
 }
 

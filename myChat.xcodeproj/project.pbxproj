@@ -2129,6 +2129,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Liang Zhenjing (B5835BTSP7)";
 				GCC_PREFIX_HEADER = "$(SRCROOT)/myChat/vchat-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2218,6 +2219,7 @@
 				1877BDE01A2B667400E8E129 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		1877BDE11A2B667400E8E129 /* Build configuration list for PBXNativeTarget "myChatTests" */ = {
 			isa = XCConfigurationList;
@@ -2226,6 +2228,7 @@
 				1877BDE31A2B667400E8E129 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
