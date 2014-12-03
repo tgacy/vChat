@@ -68,27 +68,30 @@ single_implementation(TCUserManager)
 //存储消息列表
 - (void)saveChatlistWitharray:(NSMutableArray *)array andDictionary:(NSMutableDictionary*)dictionary
 {
-    [[NSUserDefaults standardUserDefaults]setObject:array forKey:@"listArry"];
-    [[NSUserDefaults standardUserDefaults]setObject:dictionary forKey:@"listDictionary"];
+    [[NSUserDefaults standardUserDefaults]setObject:array forKey:[NSString stringWithFormat:@"%@%@",_user.username,@"array"]];
+    [[NSUserDefaults standardUserDefaults]setObject:dictionary forKey:[NSString stringWithFormat:@"%@%@",_user.username,@"listDictionary"]];
 }
+
+
 
 //获取消息列表
 - (NSMutableDictionary *)getChatlistDictionary
 {
-    NSMutableDictionary *dictionary=[[NSUserDefaults standardUserDefaults]objectForKey:@"listDictionary"];
+    NSMutableDictionary *dictionary=[[NSUserDefaults standardUserDefaults]objectForKey:[NSString stringWithFormat:@"%@%@",_user.username,@"listDictionary"]];
     if (dictionary==nil) {
         NSMutableDictionary *dict=[NSMutableDictionary dictionary];
-        [[NSUserDefaults standardUserDefaults]setObject:dict forKey:@"listDictionary"];
+        [[NSUserDefaults standardUserDefaults]setObject:dict forKey:[NSString stringWithFormat:@"%@%@",_user.username,@"listDictionary"]];
         return dict;
     }
     return dictionary;
 }
+
 - (NSMutableArray *)getChatlistArray
 {
-    NSMutableArray *array=[[NSUserDefaults standardUserDefaults]objectForKey:@"listArry"];
+    NSMutableArray *array=[[NSUserDefaults standardUserDefaults]objectForKey:[NSString stringWithFormat:@"%@%@",_user.username,@"array"]];
     if (array==nil) {
         NSMutableArray *arr=[NSMutableArray array];
-        [[NSUserDefaults standardUserDefaults]setObject:arr forKey:@"listArry"];
+        [[NSUserDefaults standardUserDefaults]setObject:arr forKey:[NSString stringWithFormat:@"%@%@",_user.username,@"array"]];
         return arr;
     }
     return array;
