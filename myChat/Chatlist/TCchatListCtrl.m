@@ -140,8 +140,8 @@
         cell = [tableView dequeueReusableCellWithIdentifier:@"from" forIndexPath:indexPath];
         [cell.headView setBackgroundImage:_bareImage forState:UIControlStateNormal];
     }
-    
-    cell.body.text = message.body;
+    cell.selectionStyle=UITableViewCellSelectionStyleNone;
+    [cell setMessage:message.body isOutgoing:message.isOutgoing];
     cell.time.text = message.timestamp.shortTimeString;
     
     return cell;
@@ -162,12 +162,12 @@
     CGSize vSize = self.view.bounds.size;
     //只有一行
     if (vSize.width - 120 >= size.width) {
-        return 56 + size.height + 14;
+        return 63 + size.height + 20;
     }
     else {
         CGRect rect = [str boundingRectWithSize:CGSizeMake(vSize.width - 120, 1000) options:NSStringDrawingUsesLineFragmentOrigin attributes:dict context:NULL];
         
-        return 56 + rect.size.height + 14;
+        return 63 + rect.size.height + 20;
     }
 }
 
