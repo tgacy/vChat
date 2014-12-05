@@ -36,6 +36,7 @@
 
     _chatlist=[[TCUserManager sharedTCUserManager] getChatlistDictionary];
     _chatarray=[[TCUserManager sharedTCUserManager] getChatlistArray];
+    _chatTableview.tableFooterView=[[UIView alloc]initWithFrame:CGRectMake(0, 0, 0, 0)];
     if (_resultsCtrl == nil)
     {
         NSManagedObjectContext *moc = [[TCServerManager sharedTCServerManager] messageContext];
