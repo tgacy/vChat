@@ -28,8 +28,8 @@ typedef NS_ENUM(NSUInteger, TCRequestErrorCode) {
 #pragma mark - 存储标识符
 #define kKeyChainIdentifier @"userInfo"
 
-//@"vpn.wuqiong.tk"
-#define kHostName  @"luojiahui-2.lan"   //主机名
+//@"vpn.wuqiong.tk" @"luojiahui-2.lan"
+#define kHostName  @"vpn.wuqiong.tk"   //主机名
 #define kOnlineType  @"available"       //上线
 #define kOfflineType  @"unavailable"    //下线
 

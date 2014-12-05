@@ -33,7 +33,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     BaseHeadInfoView *headView = (BaseHeadInfoView *)_myTableView.tableHeaderView;
-    XMPPJID *jid = [XMPPJID jidWithString:[TCUserManager sharedTCUserManager].user.username];
+    XMPPJID *jid = [XMPPJID jidWithString:[TCUserManager sharedTCUserManager].user.username resource:[TCUserManager sharedTCUserManager].user.myJidResource];
     
     NSData *photoData = [[[TCServerManager sharedTCServerManager] avatarModule] photoDataForJID:jid];
     UIImage *headImg;

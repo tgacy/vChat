@@ -13,7 +13,7 @@
 
 @interface TCchatListCtrl : BaseViewController
 
-@property (nonatomic, copy) NSString *bareJidStr;
+@property (nonatomic, strong) XMPPJID *jid;
 @property (nonatomic, strong) UIImage *bareImage;
 @property (nonatomic, strong) UIImage *myImage;
 

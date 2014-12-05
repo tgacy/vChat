@@ -16,7 +16,7 @@
 
 #import "NSDate+Utilities.h"
 
-@interface TCchatListCtrl ()<UITableViewDelegate,UITableViewDataSource, NSFetchedResultsControllerDelegate>
+@interface TCchatListCtrl ()<UITableViewDelegate,UITableViewDataSource, NSFetchedResultsControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 {
     NSFetchedResultsController *_fetchedResultController;
     NSInteger _numberOfRows;
@@ -49,7 +49,7 @@
         
         NSArray *sortDescriptors = [NSArray arrayWithObjects:sd, nil];
         
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"bareJidStr=%@", _bareJidStr];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"bareJidStr=%@", [_jid bare]];
         
         //数据请求
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
@@ -98,7 +98,7 @@
     TCMessage *message = [[TCMessage alloc] init];
     message.body = _messager.text;
     TCUser *user = [[TCUser alloc] init];
-    user.username = _bareJidStr;
+    user.username = [_jid bare];
     [[TCServerManager sharedTCServerManager] sendMessage:message toUser:user];
     
     _messager.text = nil;
@@ -162,6 +162,37 @@
         
         return 56 + rect.size.height + 14;
     }
+}
+
+#pragma mark 点击添加按钮
+- (IBAction)didAddButtonClicked:(id)sender
+{
+    // 如何判断摄像头可用
+    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
+        
+        UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+        
+        picker.allowsEditing = YES;
+        picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+        picker.delegate = self;
+        
+        [self presentViewController:picker animated:YES completion:nil];
+        
+    } else {
+        NSLog(@"摄像头不可用");
+    }
+}
+
+#pragma mark - UIImagePicker代理方法
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    // 1. 获取选择的图像
+    UIImage *image = info[UIImagePickerControllerEditedImage];
+    NSData *imageData = UIImagePNGRepresentation(image);
+    // 2. 关闭照片选择器
+    [self dismissViewControllerAnimated:YES completion:^{
+        [[TCServerManager sharedTCServerManager].outgoingFile sendData:imageData toRecipient:_jid];
+    }];
 }
 
 @end

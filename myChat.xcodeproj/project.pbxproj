@@ -2141,6 +2141,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Liang Zhenjing (B5835BTSP7)";
 				GCC_PREFIX_HEADER = "$(SRCROOT)/myChat/vchat-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",

@@ -25,6 +25,14 @@
 @property (strong, nonatomic, readonly) XMPPRosterCoreDataStorage *xmppRosterStorage;             //后面查找好友时判断好友是否已存在需要用到;
 @property (nonatomic, strong)XMPPRoster  *xmppRoster;       //通讯录
 
+//传输文件socket数组
+@property (strong, nonatomic) NSMutableArray *socketList;
+
+//接收文件
+@property (strong, nonatomic) XMPPIncomingFileTransfer *incomeingFile;
+//发送文件
+@property (strong, nonatomic) XMPPOutgoingFileTransfer *outgoingFile;
+
 //工厂方法
 single_interface(TCServerManager)
 

@@ -123,7 +123,7 @@
 {
     TCchatListCtrl *controller = (TCchatListCtrl *)segue.destinationViewController;
     
-    controller.bareJidStr = [_jid full];
+    controller.jid = _jid;
     // 取出对话方的头像数据
     TCFriendHeadView *head = (TCFriendHeadView *)_infoTableView.tableHeaderView;
     controller.bareImage = head.headImg.image;

@@ -26,7 +26,8 @@ static const int xmppLogLevel = XMPP_LOG_LEVEL_WARN; // XMPP_LOG_LEVEL_VERBOSE |
 #endif
 
 #define IOS_CELLULAR  @"pdp_ip0"
-#define IOS_WIFI      @"en0"
+#define IOS_ETH       @"en0"
+#define IOS_WIFI      @"en1"
 #define IP_ADDR_IPv4  @"ipv4"
 #define IP_ADDR_IPv6  @"ipv6"
 
@@ -1472,10 +1473,12 @@ NSString *const XMPPOutgoingFileTransferErrorDomain = @"XMPPOutgoingFileTransfer
   NSArray *searchArray;
 
   if (preferIPv4) {
-    searchArray = @[IOS_WIFI @"/" IP_ADDR_IPv4, IOS_WIFI @"/" IP_ADDR_IPv6,
+    searchArray = @[IOS_ETH @"/" IP_ADDR_IPv4, IOS_ETH @"/" IP_ADDR_IPv6,
+                    IOS_WIFI @"/" IP_ADDR_IPv4, IOS_WIFI @"/" IP_ADDR_IPv6,
                     IOS_CELLULAR @"/" IP_ADDR_IPv4, IOS_CELLULAR @"/" IP_ADDR_IPv6];
   } else {
-    searchArray = @[IOS_WIFI @"/" IP_ADDR_IPv6, IOS_WIFI @"/" IP_ADDR_IPv4,
+    searchArray = @[IOS_ETH @"/" IP_ADDR_IPv6, IOS_ETH @"/" IP_ADDR_IPv4,
+                    IOS_WIFI @"/" IP_ADDR_IPv6, IOS_WIFI @"/" IP_ADDR_IPv4,
                     IOS_CELLULAR @"/" IP_ADDR_IPv6, IOS_CELLULAR @"/" IP_ADDR_IPv4];
   }
 
@@ -1648,6 +1651,7 @@ NSString *const XMPPOutgoingFileTransferErrorDomain = @"XMPPOutgoingFileTransfer
   NSString *type = iq.type;
 
   if ([type isEqualToString:@"result"] || [type isEqualToString:@"error"]) {
+      MyLog(@"Recieve IQ: %@", iq);
     return [_idTracker invokeForElement:iq withObject:iq];
   }
 

@@ -18,4 +18,5 @@
 
 @property (strong, nonatomic) UIImage *photo;
 
+@property (copy, nonatomic) NSString *myJidResource;
 @end

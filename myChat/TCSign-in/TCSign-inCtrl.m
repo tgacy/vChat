@@ -55,6 +55,7 @@
         TCUser *user=[[TCUser alloc]init];
         user.username=[NSString stringWithFormat:@"%@@%@",_username.text,kHostName];
         user.password=_password.text;
+        user.myJidResource = _username.text;
         [[TCServerManager sharedTCServerManager] login:user];
     }
     else

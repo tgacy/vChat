@@ -28,6 +28,7 @@
     else {
         //已经保存账号密码，自动登录
         TCUser *user = [TCUserManager sharedTCUserManager].user;
+        user.myJidResource = [[user.username componentsSeparatedByString:@"@"] firstObject];
         [[TCServerManager sharedTCServerManager] login:user];
     }
     

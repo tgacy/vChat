@@ -38,7 +38,7 @@
         if (kRegisterServerState == state && kRequestOK == code) {
             [SVProgressHUD showProgress:1];
             UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-            self.view.window.rootViewController = [storyboard instantiateInitialViewController];
+            self.view.window.rootViewController = [storyboard instantiateViewControllerWithIdentifier:@"TCWelcomeCtrl"];
         }
         else {
             [SVProgressHUD showErrorWithStatus:@"注册失败，请检查网络"];

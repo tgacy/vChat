@@ -148,7 +148,7 @@
 {
     if ([segue.identifier isEqualToString:@"TCchatListCtrl"]) {
         TCchatListCtrl *chatCtrl = segue.destinationViewController;
-        chatCtrl.bareJidStr = _currentUser.bareJidStr;
+        chatCtrl.jid = _currentUser.bareJid;
         NSData *photo = [[[TCServerManager sharedTCServerManager] avatarModule] photoDataForJID:_currentUser.bareJid];
         if(photo != nil){
             chatCtrl.bareImage = [UIImage imageWithData:photo];
