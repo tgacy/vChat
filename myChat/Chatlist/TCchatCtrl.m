@@ -20,7 +20,7 @@
 @interface TCchatCtrl ()<UITableViewDataSource,UITableViewDelegate,NSFetchedResultsControllerDelegate>
 {
     NSFetchedResultsController *_resultsCtrl;
-    XMPPMessageArchiving_Message_CoreDataObject *_currentUser;
+    NSString *_currentUser;
     NSMutableDictionary *_chatlist;
     NSMutableArray *_chatarray;
 }
@@ -36,6 +36,7 @@
 
     _chatlist=[[TCUserManager sharedTCUserManager] getChatlistDictionary];
     _chatarray=[[TCUserManager sharedTCUserManager] getChatlistArray];
+    _chatTableview.tableFooterView=[[UIView alloc]initWithFrame:CGRectMake(0, 0, 0, 0)];
     if (_resultsCtrl == nil)
     {
         NSManagedObjectContext *moc = [[TCServerManager sharedTCServerManager] messageContext];
@@ -74,21 +75,20 @@
 {
     [super viewWillDisappear:animated];
     MyLog(@"%s",__func__);
-
     [[TCUserManager sharedTCUserManager]saveChatlistWitharray:_chatarray andDictionary:_chatlist];
 }
 
 - (void)dealloc
 {
     MyLog(@"%s",__func__);
-    [[TCUserManager sharedTCUserManager]saveChatlistWitharray:_chatarray andDictionary:_chatlist];
 }
 
 - (void)controller:(NSFetchedResultsController *)controller didChangeObject:(id)anObject atIndexPath:(NSIndexPath *)indexPath forChangeType:(NSFetchedResultsChangeType)type newIndexPath:(NSIndexPath *)newIndexPath
 {
     MyLog(@"++++%@---%@---%lu---%@",anObject,indexPath,type,newIndexPath);
     if (type==NSFetchedResultsChangeInsert) {
-        [_chatlist setObject:anObject forKey:[anObject bareJidStr]];
+        NSDictionary *dict=@{@"bareJidStr":[anObject bareJidStr],@"timestamp":[(XMPPMessageArchiving_Message_CoreDataObject *)anObject timestamp].shortTimeString,@"body":[anObject body]};
+        [_chatlist setObject:dict forKey:[anObject bareJidStr]];
         NSInteger index=[_chatarray indexOfObject:[anObject bareJidStr]];
         if (index!=NSNotFound) {
             [_chatarray removeObjectAtIndex:index];
@@ -111,14 +111,14 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString *jid=[_chatarray objectAtIndex:indexPath.row];
-    XMPPMessageArchiving_Message_CoreDataObject *message=(XMPPMessageArchiving_Message_CoreDataObject *)[_chatlist objectForKey:jid];
+    NSDictionary *message=[_chatlist objectForKey:jid];
     TCchatCell *cell=[tableView dequeueReusableCellWithIdentifier:@"cell" forIndexPath:indexPath];
-    cell.time.text=message.timestamp.shortTimeString;
-    cell.username.text=message.bareJidStr;
+    cell.time.text=message[@"timestamp"];
+    cell.username.text=message[@"bareJidStr"];
     MyLog(@"%@",cell.username.text);
-    cell.messager.text=message.body;
+    cell.messager.text=message[@"body"];
     
-    NSData *photo = [[[TCServerManager sharedTCServerManager] avatarModule] photoDataForJID:message.bareJid];
+    NSData *photo = [[[TCServerManager sharedTCServerManager] avatarModule] photoDataForJID:[XMPPJID jidWithString:message[@"bareJidStr"]]];
     if(photo != nil){
         cell.headView.image = [UIImage imageWithData:photo];
     }else{
@@ -136,10 +136,9 @@
 {
     //获取用户信息
     NSString *jid=[_chatarray objectAtIndex:indexPath.row];
-    XMPPMessageArchiving_Message_CoreDataObject *message=(XMPPMessageArchiving_Message_CoreDataObject *)[_chatlist objectForKey:jid];
-    _currentUser = message;
+    NSDictionary *message=[_chatlist objectForKey:jid];
+    _currentUser = message[@"bareJidStr"];
     
-    MyLog(@"~~~\n barejid:%@   streamBarejid:%@", _currentUser.bareJidStr, _currentUser.streamBareJidStr);
     
     return indexPath;
 }

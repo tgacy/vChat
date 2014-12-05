@@ -11,6 +11,12 @@
 @interface TCchatListCell : UITableViewCell
 @property (nonatomic,weak) IBOutlet UIButton *headView;
 @property (nonatomic,weak) IBOutlet UILabel *time;
-@property (nonatomic,weak) IBOutlet UILabel *body;
+
+@property (nonatomic,weak) IBOutlet UIButton *message;
+
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageWeightConstraint;
+
+- (void)setMessage:(NSString *)message isOutgoing:(BOOL)isOutgoing;
 
 @end
