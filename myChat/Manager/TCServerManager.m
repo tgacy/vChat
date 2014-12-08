@@ -8,7 +8,7 @@
 
 #import "TCServerManager.h"
 
-@interface TCServerManager () <XMPPStreamDelegate, XMPPIncomingFileTransferDelegate, XMPPOutgoingFileTransferDelegate>
+@interface TCServerManager () <XMPPStreamDelegate, XMPPIncomingFileTransferDelegate>
 {
     XMPPStream *_xmppStream;
     
@@ -16,7 +16,6 @@
     XMPPRoster  *_xmppRoster;                     //通讯录
     XMPPvCardAvatarModule *_xmppAvatarModule;     //头像模块
     XMPPvCardTempModule *_xmppvCardModule;        //电子身份模块
-    XMPPCapabilities *_xmppCapabilities;          //实体能力, 可以优化服务器性能
     XMPPMessageArchiving *_xmppMessageArchiving;  //消息
     XMPPRoom *_xmppRoom;                          //多人聊天
     
@@ -80,12 +79,6 @@ single_implementation(TCServerManager)
     _xmppAvatarModule = [[XMPPvCardAvatarModule alloc] initWithvCardTempModule:_xmppvCardModule];
     [_xmppAvatarModule activate:_xmppStream];
     
-    //服务端功能
-    XMPPCapabilitiesCoreDataStorage *capabilitiesStorage = [XMPPCapabilitiesCoreDataStorage sharedInstance];
-    _xmppCapabilities = [[XMPPCapabilities alloc] initWithCapabilitiesStorage:capabilitiesStorage];
-    //    _xmppCapabilities.autoFetchHashedCapabilities = YES;
-    [_xmppCapabilities activate:_xmppStream];
-    
     //消息
     XMPPMessageArchivingCoreDataStorage *messageStorage = [XMPPMessageArchivingCoreDataStorage sharedInstance];
     _xmppMessageArchiving = [[XMPPMessageArchiving alloc] initWithMessageArchivingStorage:messageStorage];
@@ -94,10 +87,7 @@ single_implementation(TCServerManager)
     //接收文件
     _incomeingFile = [[XMPPIncomingFileTransfer alloc] init];
     [_incomeingFile activate:_xmppStream];
-    
-    //发送文件
-    _outgoingFile = [[XMPPOutgoingFileTransfer alloc] init];
-    [_outgoingFile activate:_xmppStream];
+    [_incomeingFile addDelegate:self delegateQueue:dispatch_get_main_queue()];
 }
 
 //卸载模块
@@ -118,16 +108,11 @@ single_implementation(TCServerManager)
     [_xmppAvatarModule deactivate];
     _xmppAvatarModule = nil;
     
-    [_xmppCapabilities deactivate];
-    _xmppCapabilities = nil;
-    
     [_xmppMessageArchiving deactivate];
     _xmppMessageArchiving = nil;
     
     [_incomeingFile deactivate];
     _incomeingFile = nil;
-    [_outgoingFile deactivate];
-    _outgoingFile = nil;
 }
 
 #pragma mark - 开始和结束请求动作
@@ -402,66 +387,6 @@ single_implementation(TCServerManager)
 }
 
 #pragma mark - Receive Message
-#pragma mark 判断IQ是否为SI请求
-//- (BOOL)isSIRequest:(XMPPIQ *)iq
-//{
-//    NSXMLElement *si = [iq elementForName:@"si" xmlns:@"http://jabber.org/protocol/si"];
-//    NSString *uuid = [[si attributeForName:@"id"]stringValue];
-//    
-//    if(si &&uuid ){
-//        return YES;
-//    }
-//    
-//    return NO;
-//}
-
-//#pragma mark 接收请求
-//- (BOOL)xmppStream:(XMPPStream *)sender didReceiveIQ:(XMPPIQ *)iq
-//{
-//    MyLog(@"接收到请求 - %@", iq);
-//    
-//    // 0. 判断IQ是否为SI请求
-//    if ([self isSIRequest:iq]) {
-//        TURNSocket *socket = [[TURNSocket alloc] initWithStream:_xmppStream toJID:iq.from];
-//        MyLog(@"%@", iq.fromStr);
-//        [_socketList addObject:socket];
-//        
-//        [socket startWithDelegate:self delegateQueue:dispatch_get_main_queue()];
-//    } else if ([TURNSocket isNewStartTURNRequest:iq]) {
-//        // 1. 判断iq的类型是否为新的文件传输请求
-//        // 1) 实例化socket
-//        TURNSocket *socket = [[TURNSocket alloc] initWithStream:sender incomingTURNRequest:iq];
-//        
-//        // 2) 使用一个数组成员记录住所有传输文件使用的socket
-//        [_socketList addObject:socket];
-//        
-//        // 3）添加代理
-//        [socket startWithDelegate:self delegateQueue:dispatch_get_main_queue()];
-//    }
-//    
-//    return YES;
-//}
-
-#pragma mark 接收消息
-//- (void)xmppStream:(XMPPStream *)sender didReceiveMessage:(XMPPMessage *)message
-//{
-//    NSLog(@"接收到用户消息 - %@", message);
-//    
-//    // 1. 针对图像数据单独处理，取出数据
-//    NSString *imageStr = [[message elementForName:@"imageData"] stringValue];
-//    
-//    if (imageStr) {
-//        // 2. 解码成图像
-//        NSData *data = [[NSData alloc] initWithBase64EncodedString:imageStr options:NSDataBase64DecodingIgnoreUnknownCharacters];
-//        // 3. 保存图像
-//        UIImage *image = [UIImage imageWithData:data];
-//        // 4. 将图像保存到相册
-//        // 1) target 通常用self
-//        // 2) 保存完图像调用的方法
-//        // 3) 上下文信息
-//        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil);
-//    }
-//}
 
 //接收到上线信息
 - (void)xmppStream:(XMPPStream *)sender didReceivePresence:(XMPPPresence *)presence
@@ -523,30 +448,6 @@ single_implementation(TCServerManager)
     MyLog(@"Fail To Send Presence: %@\nError: %@", presence, error);
 }
 
-#pragma mark - TURNSocket代理
-//- (void)turnSocket:(TURNSocket *)sender didSucceed:(GCDAsyncSocket *)socket
-//{
-//    NSLog(@"成功");
-//    
-//    // 保存或者发送文件
-//    // 写数据方法，向其他客户端发送文件
-//    //    socket writeData:<#(NSData *)#> withTimeout:<#(NSTimeInterval)#> tag:<#(long)#>
-//    // 读数据方法，接收来自其他客户端的文件
-//    //    socket readDataToData:<#(NSData *)#> withTimeout:<#(NSTimeInterval)#> tag:<#(long)#>
-//    
-//    // 读写操作完成之后断开网络连接
-//    [socket disconnectAfterReadingAndWriting];
-//    
-//    [_socketList removeObject:sender];
-//}
-//
-//- (void)turnSocketDidFail:(TURNSocket *)sender
-//{
-//    NSLog(@"失败");
-//    
-//    [_socketList removeObject:sender];
-//}
-
 #pragma mark - 接收文件传输代理
 - (void)xmppIncomingFileTransfer:(XMPPIncomingFileTransfer *)sender didFailWithError:(NSError *)error
 {
@@ -561,17 +462,6 @@ single_implementation(TCServerManager)
 - (void)xmppIncomingFileTransfer:(XMPPIncomingFileTransfer *)sender didSucceedWithData:(NSData *)data named:(NSString *)name
 {
     MyLog(@"~ ~接收文件成功~ ~");
-}
-
-#pragma mark - 发送文件代理
-- (void)xmppOutgoingFileTransfer:(XMPPOutgoingFileTransfer *)sender didFailWithError:(NSError *)error
-{
-    MyLog(@"发送文件失败: %@", error);
-}
-
-- (void)xmppOutgoingFileTransferDidSucceed:(XMPPOutgoingFileTransfer *)sender
-{
-    MyLog(@"发送文件成功");
 }
 
 #pragma mark - UIAlertView代理方法

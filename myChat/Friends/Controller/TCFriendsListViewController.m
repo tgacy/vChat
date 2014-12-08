@@ -88,7 +88,10 @@
         // 获取当前选中的用户
         XMPPUserCoreDataStorageObject *user = [_fetchedResultsController objectAtIndexPath:indexPath];
         XMPPJID *jid = user.primaryResource.jid;
-        controller.jid = jid;
+        if(jid.resource != nil)
+            controller.jid = jid;
+        else
+            controller.jid = user.jid;
     }
 }
 

@@ -31,7 +31,7 @@
 //接收文件
 @property (strong, nonatomic) XMPPIncomingFileTransfer *incomeingFile;
 //发送文件
-@property (strong, nonatomic) XMPPOutgoingFileTransfer *outgoingFile;
+//@property (strong, nonatomic) XMPPOutgoingFileTransfer *outgoingFile;
 
 //工厂方法
 single_interface(TCServerManager)

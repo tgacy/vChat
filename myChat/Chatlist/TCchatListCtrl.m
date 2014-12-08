@@ -24,6 +24,8 @@
 @property (weak, nonatomic) IBOutlet UITableView *chatListTableview;
 @property (weak, nonatomic) IBOutlet UITextField *messager;
 
+@property (strong, nonatomic) XMPPOutgoingFileTransfer *outgoingFile;
+
 @end
 
 @implementation TCchatListCtrl
@@ -73,6 +75,10 @@
         }
     }
     [self controllerDidChangeContent:nil];
+    
+    _outgoingFile = [[XMPPOutgoingFileTransfer alloc] initWithDispatchQueue:dispatch_get_main_queue()];
+    [_outgoingFile activate:[TCServerManager sharedTCServerManager].xmppStream];
+    [_outgoingFile addDelegate:self delegateQueue:dispatch_get_main_queue()];
 }
 
 #pragma mark - 数据集改变
@@ -188,11 +194,23 @@
 {
     // 1. 获取选择的图像
     UIImage *image = info[UIImagePickerControllerEditedImage];
+    
     NSData *imageData = UIImagePNGRepresentation(image);
     // 2. 关闭照片选择器
     [self dismissViewControllerAnimated:YES completion:^{
-        [[TCServerManager sharedTCServerManager].outgoingFile sendData:imageData toRecipient:_jid];
+        [_outgoingFile sendData:imageData toRecipient:_jid];
     }];
+}
+
+#pragma mark - 发送文件代理
+- (void)xmppOutgoingFileTransfer:(XMPPOutgoingFileTransfer *)sender didFailWithError:(NSError *)error
+{
+    MyLog(@"发送文件失败: %@", error);
+}
+
+- (void)xmppOutgoingFileTransferDidSucceed:(XMPPOutgoingFileTransfer *)sender
+{
+    MyLog(@"发送文件成功");
 }
 
 @end

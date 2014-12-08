@@ -176,7 +176,14 @@
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
     // 1. 设置头像
-    _headImageView.image = info[UIImagePickerControllerEditedImage];
+    UIImage *image = info[UIImagePickerControllerEditedImage];
+    CGRect rect = _headImageView.bounds;
+    
+    UIGraphicsBeginImageContext(rect.size);
+    [image drawInRect:rect];
+    _headImageView.image =  UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
     // 2. 保存名片
     [self savevCard];
     
