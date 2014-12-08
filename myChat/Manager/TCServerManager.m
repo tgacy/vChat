@@ -96,8 +96,8 @@ single_implementation(TCServerManager)
     [_xmppReconnect deactivate];
     _xmppReconnect = nil;
     
-    [_xmppRoom deactivate];
-    _xmppRoom = nil;
+    //[_xmppRoom deactivate];
+    //_xmppRoom = nil;
     
     [_xmppRoster deactivate];
     _xmppRoster = nil;
@@ -112,6 +112,7 @@ single_implementation(TCServerManager)
     _xmppMessageArchiving = nil;
     
     [_incomeingFile deactivate];
+    [_incomeingFile removeDelegate:self delegateQueue:dispatch_get_main_queue()];
     _incomeingFile = nil;
 }
 

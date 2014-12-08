@@ -19,6 +19,7 @@
 @interface TCchatListCtrl ()<UITableViewDelegate,UITableViewDataSource, NSFetchedResultsControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 {
     NSFetchedResultsController *_fetchedResultController;
+    NSFetchedResultsController *_userResultController;
     NSInteger _numberOfRows;
 }
 @property (weak, nonatomic) IBOutlet UITableView *chatListTableview;
@@ -38,6 +39,10 @@
         _myImage = [UIImage imageNamed:kDefaultHeadImage];
     }
     
+    //获取用户完整jid
+    [self getUserCompleteJid:_jid];
+    
+    //获取消息结果集
     if (_fetchedResultController == nil)
     {
         NSManagedObjectContext *moc = [[TCServerManager sharedTCServerManager] messageContext];
@@ -81,11 +86,57 @@
     [_outgoingFile addDelegate:self delegateQueue:dispatch_get_main_queue()];
 }
 
+- (void)getUserCompleteJid:(XMPPJID *)jid
+{
+    // 1. 如果要针对CoreData做数据访问，无论怎么包装，都离不开NSManagedObjectContext
+    // 实例化NSManagedObjectContext
+    NSManagedObjectContext *context = [[TCServerManager sharedTCServerManager] rosterContext];
+    
+    // 2. 实例化NSFetchRequest
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"XMPPUserCoreDataStorageObject"];
+    
+    //3. 设置请求谓词 实例化一个排序
+    NSSortDescriptor *sort1 = [NSSortDescriptor sortDescriptorWithKey:@"sectionNum" ascending:YES];
+    
+    [request setSortDescriptors:@[sort1]];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"jidStr=%@", [_jid bare]];
+    
+    //4. 数据请求
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    [fetchRequest setPredicate:predicate];
+    
+    // 5. 实例化_fetchedResultsController
+    _userResultController = [[NSFetchedResultsController alloc]initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:@"sectionNum" cacheName:nil];
+    
+    // 6. 设置代理
+    _userResultController.delegate = self;
+    
+    // 7. 查询数据
+    NSError *error = nil;
+    if (![_userResultController performFetch:&error]) {
+        MyLog(@"%@", error.localizedDescription);
+    }else{
+        XMPPUserCoreDataStorageObject *user = [_userResultController objectAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+        XMPPJID *jid = user.primaryResource.jid;
+        if(jid.resource != nil)
+            _jid = jid;
+    }
+}
+
 #pragma mark - 数据集改变
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
 {
-    [_chatListTableview reloadData];
+    if(controller == _userResultController){
+        XMPPUserCoreDataStorageObject *user = [_userResultController objectAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+        XMPPJID *jid = user.primaryResource.jid;
+        if(jid.resource != nil)
+            _jid = jid;
+        else
+            _jid = user.jid;
+        return;
+    }
     
+    [_chatListTableview reloadData];
     //尝试滚动到最底下
     [self scrollToBottom];
 }
@@ -196,6 +247,7 @@
     UIImage *image = info[UIImagePickerControllerEditedImage];
     
     NSData *imageData = UIImagePNGRepresentation(image);
+    
     // 2. 关闭照片选择器
     [self dismissViewControllerAnimated:YES completion:^{
         [_outgoingFile sendData:imageData toRecipient:_jid];
@@ -211,6 +263,14 @@
 - (void)xmppOutgoingFileTransferDidSucceed:(XMPPOutgoingFileTransfer *)sender
 {
     MyLog(@"发送文件成功");
+}
+
+#pragma mark - 销毁
+- (void)dealloc
+{
+    [_outgoingFile deactivate];
+    [_outgoingFile removeDelegate:self delegateQueue:dispatch_get_main_queue()];
+    _outgoingFile = nil;
 }
 
 @end
