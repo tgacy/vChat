@@ -307,6 +307,7 @@
                                         <textInputTraits key="textInputTraits"/>
                                         <connections>
                                             <action selector="inputTextDidChanged:" destination="kgv-tA-GuI" eventType="editingChanged" id="5Hw-7M-PiN"/>
+                                            <action selector="inputTextDidEnd:" destination="kgv-tA-GuI" eventType="editingDidEnd" id="NbC-iA-fXd"/>
                                         </connections>
                                     </textField>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="T1U-g6-ubH">

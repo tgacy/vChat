@@ -179,4 +179,10 @@
     }
 }
 
+- (IBAction)inputTextDidEnd:(id)sender
+{
+    _sendMessage.hidden = YES;
+    _addButton.hidden = NO;
+}
+
 @end

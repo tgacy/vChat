@@ -13,6 +13,7 @@
 
 #import "TCUser.h"
 #import "TCMessage.h"
+#import "SVProgressHUD.h"
 
 #import "NSDate+Utilities.h"
 
@@ -224,6 +225,11 @@
 #pragma mark 点击添加按钮
 - (IBAction)didAddButtonClicked:(id)sender
 {
+    if(!_jid.resource){
+        [SVProgressHUD showErrorWithStatus:@"对方不在线或者jid缺少resource部分"];
+        return ;
+    }
+    
     // 如何判断摄像头可用
     if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
         
@@ -258,11 +264,13 @@
 - (void)xmppOutgoingFileTransfer:(XMPPOutgoingFileTransfer *)sender didFailWithError:(NSError *)error
 {
     MyLog(@"发送文件失败: %@", error);
+    [SVProgressHUD showErrorWithStatus:[error localizedDescription]];
 }
 
 - (void)xmppOutgoingFileTransferDidSucceed:(XMPPOutgoingFileTransfer *)sender
 {
     MyLog(@"发送文件成功");
+    [SVProgressHUD showSuccessWithStatus:@"发送文件成功"];
 }
 
 #pragma mark - 销毁
