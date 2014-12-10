@@ -17,11 +17,16 @@
 
 #import "NSDate+Utilities.h"
 
-@interface TCchatListCtrl ()<UITableViewDelegate,UITableViewDataSource, NSFetchedResultsControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate>
+#define kSendImgWidth 100
+#define kSendingImageStr @"正在发送图片@"
+#define kSendedImageStr @"图片发送完成@"
+
+@interface TCchatListCtrl ()<UITableViewDelegate,UITableViewDataSource, NSFetchedResultsControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIAlertViewDelegate>
 {
     NSFetchedResultsController *_fetchedResultController;
     NSFetchedResultsController *_userResultController;
     NSInteger _numberOfRows;
+    UIImage *_sendImage;
 }
 @property (weak, nonatomic) IBOutlet UITableView *chatListTableview;
 @property (weak, nonatomic) IBOutlet UITextField *messager;
@@ -191,10 +196,16 @@
         cell = [tableView dequeueReusableCellWithIdentifier:@"from" forIndexPath:indexPath];
         [cell.headView setBackgroundImage:_bareImage forState:UIControlStateNormal];
     }
+    
     cell.selectionStyle=UITableViewCellSelectionStyleNone;
-    [cell setMessage:message.body isOutgoing:message.isOutgoing];
     cell.time.text = message.timestamp.shortTimeString;
     
+    if([message.body hasPrefix:kSendedImageStr]){
+        [self drawImageAtCell:&cell withMessageBody:message.body];
+        
+        return cell;
+    }
+    [cell setMessage:message.body isOutgoing:message.isOutgoing];
     return cell;
 }
 
@@ -203,6 +214,10 @@
     XMPPMessageArchiving_Message_CoreDataObject *message = [_fetchedResultController objectAtIndexPath:indexPath];
     
     NSString *str = message.body;
+    if([str hasPrefix:kSendedImageStr]){
+        return [self drawImageAtCell:NULL withMessageBody:str];
+    }
+    
     NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
     style.lineBreakMode = NSLineBreakByWordWrapping;
     style.alignment = NSTextAlignmentLeft;
@@ -213,13 +228,34 @@
     CGSize vSize = self.view.bounds.size;
     //只有一行
     if (vSize.width - 120 >= size.width) {
-        return 63 + size.height + 20;
+        return 50.0 + size.height + 20;
     }
     else {
         CGRect rect = [str boundingRectWithSize:CGSizeMake(vSize.width - 120, 1000) options:NSStringDrawingUsesLineFragmentOrigin attributes:dict context:NULL];
         
-        return 63 + rect.size.height + 20;
+        return 50.0 + rect.size.height + 20;
     }
+}
+
+#pragma mark - 求消息中图片的高度
+- (CGFloat)drawImageAtCell:(TCchatListCell **)ListCell withMessageBody:(NSString *)body
+{
+    NSString *imageName = [[body componentsSeparatedByString:@"@"] lastObject];
+    NSString *imagePath = [kDocumentDirectory stringByAppendingPathComponent:imageName];
+    UIImage *image = [UIImage imageWithContentsOfFile:imagePath];
+    if(image == nil){
+        image = [UIImage imageNamed:@"Fav_nopic"];
+    }
+    image = [self compressImage:image];
+    CGSize size = [image size];
+    if(ListCell != NULL){
+        TCchatListCell *cell = *ListCell;
+        [cell.message setBackgroundImage:image forState:UIControlStateNormal];
+        [cell.message setTitle:@"" forState:UIControlStateNormal];
+        cell.messageWeightConstraint.constant = size.width;
+        cell.messageHeightConstraint.constant = size.height;
+    }
+    return size.height + 35.0 + 20.0;
 }
 
 #pragma mark 点击添加按钮
@@ -250,13 +286,13 @@
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
     // 1. 获取选择的图像
-    UIImage *image = info[UIImagePickerControllerEditedImage];
-    
-    NSData *imageData = UIImagePNGRepresentation(image);
+    _sendImage = info[UIImagePickerControllerEditedImage];
     
     // 2. 关闭照片选择器
+    __weak typeof(self) mySelf = self;
     [self dismissViewControllerAnimated:YES completion:^{
-        [_outgoingFile sendData:imageData toRecipient:_jid];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"" message:@"是否发送原图" delegate:mySelf cancelButtonTitle:@"否" otherButtonTitles:@"是", nil];
+        [alert show];
     }];
 }
 
@@ -271,6 +307,53 @@
 {
     MyLog(@"发送文件成功");
     [SVProgressHUD showSuccessWithStatus:@"发送文件成功"];
+    
+    //发送消息
+    NSString *imagePath = sender.outgoingFileName;
+    TCMessage *message = [[TCMessage alloc] init];
+    message.body = [kSendedImageStr stringByAppendingString:imagePath];
+    TCUser *user = [[TCUser alloc] init];
+    user.username = [_jid bare];
+    [[TCServerManager sharedTCServerManager] sendMessage:message toUser:user];
+}
+
+#pragma mark - UIAlertView代理方法
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    //发送压缩图
+    if (0 == buttonIndex) {
+        _sendImage = [self compressImage:_sendImage];
+    }
+    
+    //存储图片
+    NSString *imageName = [[TCServerManager sharedTCServerManager].xmppStream generateUUID];
+    NSString *imagePath = [kDocumentDirectory stringByAppendingPathComponent:imageName];
+    
+    NSData *imageData = UIImagePNGRepresentation(_sendImage);
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [imageData writeToFile:imagePath atomically:YES];
+    });
+    
+    NSError *error;
+    if(![_outgoingFile sendData:imageData named:imageName toRecipient:_jid
+                    description:@"image" error:&error]){
+        MyLog(@"%@", error);
+    };
+}
+
+#pragma mark - 压缩图片
+- (UIImage *)compressImage:(UIImage *)image
+{
+    CGSize imageSize = image.size;
+    if(imageSize.width > kSendImgWidth){
+        imageSize.height = kSendImgWidth * imageSize.height / imageSize.width;
+        imageSize.width = kSendImgWidth;
+        UIGraphicsBeginImageContext(imageSize);
+        [image drawInRect:CGRectMake(0, 0, imageSize.width, imageSize.height)];
+        image = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+    }
+    return image;
 }
 
 #pragma mark - 销毁

@@ -267,7 +267,6 @@ single_implementation(TCServerManager)
 }
 
 #pragma mark - 发送消息
-#warning 发送消息还没有实现
 - (void)sendMessage:(TCMessage *)message toUser:(TCUser *)user     //给用户发送消息
 {
     XMPPJID *jid = [XMPPJID jidWithString:user.username];
@@ -411,7 +410,6 @@ single_implementation(TCServerManager)
 }
 
 #pragma mark - Send
-#warning 监听发送代理方法部分还没有实现
 //发送信息请求成功
 - (void)xmppStream:(XMPPStream *)sender didSendIQ:(XMPPIQ *)iq
 {
@@ -463,6 +461,10 @@ single_implementation(TCServerManager)
 - (void)xmppIncomingFileTransfer:(XMPPIncomingFileTransfer *)sender didSucceedWithData:(NSData *)data named:(NSString *)name
 {
     MyLog(@"~ ~接收文件成功~ ~");
+    NSString *path = [kDocumentDirectory stringByAppendingPathComponent:name];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [data writeToFile:path atomically:YES];
+    });
 }
 
 #pragma mark - UIAlertView代理方法

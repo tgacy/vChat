@@ -49,7 +49,7 @@
 - (void)setMessage:(NSString *)message isOutgoing:(BOOL)isOutgoing
 {
     // 1. 根据isOutgoing判断消息是发送还是接受，依次来设置按钮的背景图片
-    if (isOutgoing) {
+    if (isOutgoing) {        
         [_message setBackgroundImage:_senderImage forState:UIControlStateNormal];
         [_message setBackgroundImage:_senderImageHL forState:UIControlStateHighlighted];
     } else {
