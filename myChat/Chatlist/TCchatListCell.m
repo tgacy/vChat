@@ -57,7 +57,39 @@
         [_message setBackgroundImage:_receiveImageHL forState:UIControlStateHighlighted];
     }
     
+    if([message hasPrefix:kSendedRecordStr]){
+        NSArray *componentsArray = [message componentsSeparatedByString:@"@"];
+        NSString *title = [kDocumentDirectory stringByAppendingPathComponent:[componentsArray lastObject]];
+        [_message setTitle:title forState:UIControlStateNormal];
+        [_message setTitle:@"" forState:UIControlStateHighlighted];
+        [_message setTitleColor:[UIColor clearColor] forState:UIControlStateNormal];
+        [_message setTitleColor:[UIColor clearColor] forState:UIControlStateHighlighted];
+        
+        NSInteger duration = [componentsArray[1] integerValue];
+        UIImage *voiceImage = [UIImage imageNamed:@"SenderVoiceNodePlaying"];
+        CGSize voiceSize = [voiceImage size];
+        CGFloat stepLen = 2.5;
+        CGFloat width = (duration - 1) * stepLen + (voiceSize.width + 50);
+        CGFloat maxWidth = [UIScreen mainScreen].bounds.size.width - 100.0;
+        if(width > maxWidth){
+            width = maxWidth;
+        }
+        
+        _messageHeightConstraint.constant = voiceSize.height + 20.0;
+        _messageWeightConstraint.constant = width;
+        
+        if(isOutgoing) {
+            _message.imageEdgeInsets = UIEdgeInsetsMake(8.0, width - 15.0 - voiceSize.width, 0, 0);
+        }else {
+            _message.imageEdgeInsets = UIEdgeInsetsMake(8.0, 15.0, 0, 0);
+            voiceImage = [UIImage imageNamed:@"ReceiverVoiceNodePlaying"];
+        }
+        [_message setImage:voiceImage forState:UIControlStateNormal];
+        [self layoutIfNeeded];
+        return;
+    }
     
+    [_message setImage:nil forState:UIControlStateNormal];
     NSString *str = message;
     NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
     style.lineBreakMode = NSLineBreakByWordWrapping;
@@ -69,7 +101,7 @@
     CGSize vSize = self.bounds.size;
 //    // 2. 设置按钮文字
 //    // 2.1 计算文字占用的区间
-    CGRect rect= [str boundingRectWithSize:CGSizeMake(vSize.width - 120, 1000) options:NSStringDrawingUsesLineFragmentOrigin attributes:dict context:NULL];
+    CGRect rect= [str boundingRectWithSize:CGSizeMake(vSize.width - 150, 1000) options:NSStringDrawingUsesLineFragmentOrigin attributes:dict context:NULL];
     
     
     // 2.2 使用文本占用空间设置按钮的约束
@@ -79,6 +111,7 @@
     
     // 2.3 设置按钮文字
     [_message setTitle:message forState:UIControlStateNormal];
+    [_message setTitleColor:[UIColor darkTextColor] forState:UIControlStateNormal];
     
     // 2.4 重新调整布局
     [self layoutIfNeeded];

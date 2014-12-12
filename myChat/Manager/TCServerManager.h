@@ -15,8 +15,6 @@
 #import "TCMessage.h"
 #import "TCGroup.h"
 
-#define kDocumentDirectory [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"]
-
 @interface TCServerManager : NSObject
 
 //开始连接和完成连接的动作

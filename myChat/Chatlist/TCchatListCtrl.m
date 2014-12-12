@@ -7,7 +7,6 @@
 //
 
 #import "TCchatListCtrl.h"
-
 #import "TCchatListCell.h"
 #import "TCServerManager.h"
 
@@ -17,16 +16,19 @@
 
 #import "NSDate+Utilities.h"
 
-#define kSendImgWidth 100
-#define kSendingImageStr @"正在发送图片@"
-#define kSendedImageStr @"图片发送完成@"
+#import <AVFoundation/AVFoundation.h>
 
-@interface TCchatListCtrl ()<UITableViewDelegate,UITableViewDataSource, NSFetchedResultsControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIAlertViewDelegate>
+
+@interface TCchatListCtrl ()<UITableViewDelegate,UITableViewDataSource, NSFetchedResultsControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIAlertViewDelegate, AVAudioRecorderDelegate>
 {
-    NSFetchedResultsController *_fetchedResultController;
-    NSFetchedResultsController *_userResultController;
-    NSInteger _numberOfRows;
-    UIImage *_sendImage;
+    NSFetchedResultsController *_fetchedResultController; //消息结果集
+    NSFetchedResultsController *_userResultController;    //获取好友完整jid
+    NSInteger _numberOfRows;                              //行数
+    UIImage *_sendImage;                                  //存储发送的图片
+    
+    AVAudioRecorder *_audioRecoder;                       //录音对象
+    BOOL _isInside;                                       //判断在哪释放录音
+    NSDate *_recordDate;                                   //录制时间
 }
 @property (weak, nonatomic) IBOutlet UITableView *chatListTableview;
 @property (weak, nonatomic) IBOutlet UITextField *messager;
@@ -202,9 +204,9 @@
     
     if([message.body hasPrefix:kSendedImageStr]){
         [self drawImageAtCell:&cell withMessageBody:message.body];
-        
         return cell;
     }
+    
     [cell setMessage:message.body isOutgoing:message.isOutgoing];
     return cell;
 }
@@ -216,6 +218,9 @@
     NSString *str = message.body;
     if([str hasPrefix:kSendedImageStr]){
         return [self drawImageAtCell:NULL withMessageBody:str];
+    }else if ([str hasPrefix:kSendedRecordStr]){
+        UIImage *image = [UIImage imageNamed:@"SenderVoiceNodePlaying"];
+        return image.size.height + 20.0 + 50.0;
     }
     
     NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
@@ -227,17 +232,18 @@
     
     CGSize vSize = self.view.bounds.size;
     //只有一行
-    if (vSize.width - 120 >= size.width) {
+    if (vSize.width - 150 >= size.width) {
         return 50.0 + size.height + 20;
     }
     else {
-        CGRect rect = [str boundingRectWithSize:CGSizeMake(vSize.width - 120, 1000) options:NSStringDrawingUsesLineFragmentOrigin attributes:dict context:NULL];
+        CGRect rect = [str boundingRectWithSize:CGSizeMake(vSize.width - 150, 1000) options:NSStringDrawingUsesLineFragmentOrigin attributes:dict context:NULL];
         
         return 50.0 + rect.size.height + 20;
     }
 }
 
 #pragma mark - 求消息中图片的高度
+//发送图片
 - (CGFloat)drawImageAtCell:(TCchatListCell **)ListCell withMessageBody:(NSString *)body
 {
     NSString *imageName = [[body componentsSeparatedByString:@"@"] lastObject];
@@ -250,6 +256,7 @@
     CGSize size = [image size];
     if(ListCell != NULL){
         TCchatListCell *cell = *ListCell;
+        [cell.message setImage:nil forState:UIControlStateNormal];
         [cell.message setBackgroundImage:image forState:UIControlStateNormal];
         [cell.message setTitle:@"" forState:UIControlStateNormal];
         cell.messageWeightConstraint.constant = size.width;
@@ -257,6 +264,12 @@
     }
     return size.height + 35.0 + 20.0;
 }
+//发送录音
+//- (CGFloat)drawRecordImageAtCell:(TCchatListCell **)ListCell withMessageBody:(NSString *)body
+//{
+//    NSString *recordName = [[body componentsSeparatedByString:@"@"] lastObject];
+//    NSString *recordPath = [kDocumentDirectory stringByAppendingPathComponent:recordName];
+//}
 
 #pragma mark 点击添加按钮
 - (IBAction)didAddButtonClicked:(id)sender
@@ -309,9 +322,14 @@
     [SVProgressHUD showSuccessWithStatus:@"发送文件成功"];
     
     //发送消息
-    NSString *imagePath = sender.outgoingFileName;
+    NSString *filePath = sender.outgoingFileName;
     TCMessage *message = [[TCMessage alloc] init];
-    message.body = [kSendedImageStr stringByAppendingString:imagePath];
+    if([sender.outgoingFileDescription isEqualToString:@"image"])
+        message.body = [kSendedImageStr stringByAppendingString:filePath];
+    else if([sender.outgoingFileDescription hasPrefix:@"record"]){
+        NSString *timeStr = [[sender.outgoingFileDescription componentsSeparatedByString:@"@"] lastObject];
+        message.body = [kSendedRecordStr stringByAppendingFormat:@"%@@%@", timeStr, filePath];
+    }
     TCUser *user = [[TCUser alloc] init];
     user.username = [_jid bare];
     [[TCServerManager sharedTCServerManager] sendMessage:message toUser:user];
@@ -364,4 +382,106 @@
     _outgoingFile = nil;
 }
 
+#pragma mark - 按住说话按钮的action方法
+- (IBAction)didRecordBtnTouchDown:(id)sender {
+    MyLog(@"Touch Down");
+    _isInside = NO;
+    if(!_jid.resource){
+        [SVProgressHUD showErrorWithStatus:@"对方不在线或者jid缺少resource部分"];
+        return ;
+    }
+    [sender setTitle:@"松开结束" forState:UIControlStateHighlighted];
+    NSDictionary *settings = [self audioRecordingSettings];
+    NSString *recordName = [[[TCServerManager sharedTCServerManager].xmppStream generateUUID] stringByAppendingString:@".m4a"];
+    NSURL *recordUrl = [NSURL fileURLWithPath:[kDocumentDirectory stringByAppendingPathComponent:recordName]];
+    NSError *error = nil;
+    _audioRecoder = [[AVAudioRecorder alloc] initWithURL:recordUrl settings:settings error:&error];
+    if(error != nil){
+        MyLog(@"%@", error);
+    }
+    if(_audioRecoder != nil){
+        _audioRecoder.delegate = self;
+        [_audioRecoder recordForDuration:60.0];
+        [_audioRecoder prepareToRecord];
+        [_audioRecoder record];
+        _recordDate = [NSDate date];
+    }
+}
+
+- (IBAction)didRecordBtnTouchDragEnter:(id)sender {
+    MyLog(@"Drag Enter");
+    [sender setTitle:@"松开结束" forState:UIControlStateHighlighted];
+}
+
+- (IBAction)didRecordBtnTouchDragExit:(id)sender {
+    MyLog(@"Drag Exit");
+    [sender setTitle:@"松开手指, 取消发送" forState:UIControlStateHighlighted];
+}
+
+- (IBAction)didRecordBtnTouchDragInside:(id)sender {
+    MyLog(@"Drag Inside");
+}
+
+- (IBAction)didRecordBtnTouchDragOutside:(id)sender {
+    MyLog(@"Drag Outside");
+}
+
+- (IBAction)didRecordBtnTouchUpInside:(id)sender {
+    MyLog(@"Touch Up Inside");
+    //停止录音
+    _isInside = YES;
+    [_audioRecoder stop];
+}
+
+- (IBAction)didRecordBtnTouchUpOutside:(id)sender {
+    MyLog(@"Touch Up Outside");
+    //停止并删除录音
+    _isInside = NO;
+    [_audioRecoder stop];
+}
+
+#pragma mark - 录音对象相关方法
+- (NSDictionary *)audioRecordingSettings{
+    NSDictionary *result = nil;
+    NSMutableDictionary *settings = [[NSMutableDictionary
+                                      alloc] init];
+    [settings setValue:[NSNumber
+                        numberWithInteger:kAudioFormatAppleLossless] forKey:AVFormatIDKey];
+    [settings setValue:[NSNumber numberWithFloat: 44100.0f] forKey:AVSampleRateKey];
+    [settings setValue:[NSNumber numberWithInteger:1] forKey:AVNumberOfChannelsKey];
+    [settings setValue:[NSNumber numberWithInteger:AVAudioQualityLow] forKey:AVEncoderAudioQualityKey];
+    result = [NSDictionary dictionaryWithDictionary:settings];
+    return result;
+}
+
+- (void)audioRecorderDidFinishRecording:(AVAudioRecorder *)recorder successfully:(BOOL)flag
+{
+    if(flag){
+        if(_isInside){
+            //发送录音消息
+            NSDate *date = [NSDate date];
+            NSTimeInterval timeinterval = [date timeIntervalSinceDate:_recordDate];
+            if(timeinterval < 0.5)
+                return;
+            NSInteger timeDuration = round(timeinterval);
+            NSString *recordFileName = [[[_audioRecoder.url absoluteString] componentsSeparatedByString:@"/"] lastObject];
+            
+            NSData *recordData = [NSData dataWithContentsOfFile:[_audioRecoder.url resourceSpecifier]];
+            
+            if(recordData != nil && recordData.length != 0){
+                [_outgoingFile sendData:recordData named:recordFileName toRecipient:_jid description:[@"record@" stringByAppendingString:[NSString stringWithFormat:@"%ld", timeDuration]] error:nil];
+            }else{
+                MyLog(@"发送录音不成功");
+            }
+        }else{
+            //删除录音文件
+            [_audioRecoder deleteRecording];
+        }
+    }
+}
+
+- (void)audioRecorderEncodeErrorDidOccur:(AVAudioRecorder *)recorder error:(NSError *)error
+{
+    MyLog(@"录音错误: %@", error);
+}
 @end

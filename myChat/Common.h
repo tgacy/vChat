@@ -79,3 +79,9 @@ return _instance; \
 #define kDefaultHeadImage @"head"
 #define kDefaultHeadWidth 66
 #define kDefaultHeadHeight 66
+
+//发送文件
+#define kDocumentDirectory [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"]
+#define kSendImgWidth 100
+#define kSendedRecordStr @"录音发送完成@"
+#define kSendedImageStr @"图片发送完成@"
