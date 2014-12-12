@@ -264,12 +264,6 @@
     }
     return size.height + 35.0 + 20.0;
 }
-//发送录音
-//- (CGFloat)drawRecordImageAtCell:(TCchatListCell **)ListCell withMessageBody:(NSString *)body
-//{
-//    NSString *recordName = [[body componentsSeparatedByString:@"@"] lastObject];
-//    NSString *recordPath = [kDocumentDirectory stringByAppendingPathComponent:recordName];
-//}
 
 #pragma mark 点击添加按钮
 - (IBAction)didAddButtonClicked:(id)sender

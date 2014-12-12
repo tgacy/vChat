@@ -96,7 +96,6 @@
     style.alignment = NSTextAlignmentLeft;
     
     NSDictionary *dict = @{NSFontAttributeName:[UIFont systemFontOfSize:17], NSParagraphStyleAttributeName:style};
-//    CGSize size = [str sizeWithAttributes:dict];
     
     CGSize vSize = self.bounds.size;
 //    // 2. 设置按钮文字
