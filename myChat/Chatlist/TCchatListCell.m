@@ -57,7 +57,9 @@
         [_message setBackgroundImage:_receiveImageHL forState:UIControlStateHighlighted];
     }
     
+    //判断是否是语音cell
     if([message hasPrefix:kSendedRecordStr]){
+        _message.tag = 2;   // 2 表示是语音cell
         NSArray *componentsArray = [message componentsSeparatedByString:@"@"];
         NSString *title = [kDocumentDirectory stringByAppendingPathComponent:[componentsArray lastObject]];
         [_message setTitle:title forState:UIControlStateNormal];
@@ -78,18 +80,27 @@
         _messageHeightConstraint.constant = voiceSize.height + 20.0;
         _messageWeightConstraint.constant = width;
         
+        NSString *imageNameFormat;
         if(isOutgoing) {
+            imageNameFormat = @"SenderVoiceNodePlaying%03lu";
             _message.imageEdgeInsets = UIEdgeInsetsMake(8.0, width - 15.0 - voiceSize.width, 0, 0);
         }else {
+            imageNameFormat = @"ReceiverVoiceNodePlaying%03lu";
             _message.imageEdgeInsets = UIEdgeInsetsMake(8.0, 15.0, 0, 0);
             voiceImage = [UIImage imageNamed:@"ReceiverVoiceNodePlaying"];
         }
+        NSArray *imageArray = [self imageArrayWithFormat:imageNameFormat count:4];
+        [_message.imageView setAnimationImages:imageArray];
         [_message setImage:voiceImage forState:UIControlStateNormal];
         [self layoutIfNeeded];
         return;
     }
     
+    //恢复普通cell的样式
+    _message.tag = 0;  // 0 表示是普通的文字消息
     [_message setImage:nil forState:UIControlStateNormal];
+    [_message.imageView setAnimationImages:nil];
+    
     NSString *str = message;
     NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
     style.lineBreakMode = NSLineBreakByWordWrapping;
@@ -114,6 +125,17 @@
     
     // 2.4 重新调整布局
     [self layoutIfNeeded];
+}
+
+#pragma mark - 获取动画数组
+- (NSArray *)imageArrayWithFormat:(NSString *)format count:(NSUInteger)count
+{
+    NSMutableArray *imageArray = [NSMutableArray arrayWithCapacity:count];
+    for(NSUInteger i = 0; i < count; i++){
+        UIImage *image = [UIImage imageNamed:[NSString stringWithFormat:format, i]];
+        [imageArray addObject:image];
+    }
+    return imageArray;
 }
 
 @end

@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "BaseViewController.h"
 
-@interface TCAddFriendViewController : UIViewController
+@interface TCAddFriendViewController : BaseViewController
 
 @end

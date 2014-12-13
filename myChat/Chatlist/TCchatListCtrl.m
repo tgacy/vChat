@@ -9,6 +9,7 @@
 #import "TCchatListCtrl.h"
 #import "TCchatListCell.h"
 #import "TCServerManager.h"
+#import "TCFriendInfoViewController.h"
 
 #import "TCUser.h"
 #import "TCMessage.h"
@@ -19,7 +20,7 @@
 #import <AVFoundation/AVFoundation.h>
 
 
-@interface TCchatListCtrl ()<UITableViewDelegate,UITableViewDataSource, NSFetchedResultsControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIAlertViewDelegate, AVAudioRecorderDelegate>
+@interface TCchatListCtrl ()<UITableViewDelegate,UITableViewDataSource, NSFetchedResultsControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIAlertViewDelegate, AVAudioRecorderDelegate, AVAudioPlayerDelegate>
 {
     NSFetchedResultsController *_fetchedResultController; //消息结果集
     NSFetchedResultsController *_userResultController;    //获取好友完整jid
@@ -28,7 +29,10 @@
     
     AVAudioRecorder *_audioRecoder;                       //录音对象
     BOOL _isInside;                                       //判断在哪释放录音
-    NSDate *_recordDate;                                   //录制时间
+    NSDate *_recordDate;                                  //录制时间
+    
+    AVAudioPlayer *_audioPlayer;                          //播放语音对象
+    UIButton *_lastPlayButton;                            //上一次播放的语音按钮
 }
 @property (weak, nonatomic) IBOutlet UITableView *chatListTableview;
 @property (weak, nonatomic) IBOutlet UITextField *messager;
@@ -256,9 +260,14 @@
     CGSize size = [image size];
     if(ListCell != NULL){
         TCchatListCell *cell = *ListCell;
+        cell.message.tag = 1;  //表示是图片类型cell
         [cell.message setImage:nil forState:UIControlStateNormal];
+        [cell.message.imageView setAnimationImages:nil];
+        
         [cell.message setBackgroundImage:image forState:UIControlStateNormal];
-        [cell.message setTitle:@"" forState:UIControlStateNormal];
+        [cell.message setTitle:imagePath forState:UIControlStateNormal];
+        [cell.message setTitleColor:[UIColor clearColor] forState:UIControlStateNormal];
+        
         cell.messageWeightConstraint.constant = size.width;
         cell.messageHeightConstraint.constant = size.height;
     }
@@ -371,6 +380,7 @@
 #pragma mark - 销毁
 - (void)dealloc
 {
+    MyLog(@"%s", __func__);
     [_outgoingFile deactivate];
     [_outgoingFile removeDelegate:self delegateQueue:dispatch_get_main_queue()];
     _outgoingFile = nil;
@@ -478,4 +488,105 @@
 {
     MyLog(@"录音错误: %@", error);
 }
+
+#pragma mark - 点击聊天信息
+- (IBAction)didMessageBtnClicked:(UIButton *)sender {
+    switch(sender.tag){
+        case 1:            //图片
+            MyLog(@"放大图片: %@", sender.titleLabel.text);
+            [self scaleImage:sender.titleLabel.text];
+            break;
+        case 2:            //语音
+            MyLog(@"播放语音: %@", sender.titleLabel.text);
+            [self playSoundWithFile:sender];
+            break;
+        default:           //普通文字消息
+            break;
+    }
+}
+
+- (IBAction)didHeadBtnClicked:(UIButton *)sender {
+    //获取上一级控制器
+    NSArray *ctrlArray = self.navigationController.viewControllers;
+    NSUInteger count = ctrlArray.count;
+    UIViewController *priviewCtrl = ctrlArray[count - 2];
+    if([priviewCtrl class] == [TCFriendInfoViewController class]){
+        [self.navigationController popViewControllerAnimated:YES];
+    }else{
+        [self performSegueWithIdentifier:@"showFriendInfoSegue" sender:self];
+    }
+}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([segue.identifier isEqualToString:@"showFriendInfoSegue"]) {
+        TCFriendInfoViewController *ctrl = segue.destinationViewController;
+        ctrl.jid = [_jid bareJID];
+    }
+}
+
+//播放语音
+- (void)playSoundWithFile:(UIButton *)button
+{
+    if(_audioPlayer.isPlaying){
+        [_audioPlayer stop];
+    }
+    //记录上次播放语音的按钮, 并停止上次按钮的动画播放
+    if(_lastPlayButton != nil){
+        if([_lastPlayButton.imageView isAnimating]){
+            [_lastPlayButton.imageView stopAnimating];
+            [_lastPlayButton setImage:_lastPlayButton.imageView.image forState:UIControlStateNormal];
+        }
+    }
+    _lastPlayButton = button;
+    
+    NSURL *fileUrl = [NSURL fileURLWithPath:button.titleLabel.text];
+    NSError *error = nil;
+    _audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:fileUrl error:&error];
+    if(error != nil){
+        MyLog(@"%@", error);
+        [SVProgressHUD showErrorWithStatus:@"语音文件丢失, 无法播放"];
+        return;
+    }
+    _audioPlayer.delegate = self;
+    [_audioPlayer prepareToPlay];
+    
+    [button.imageView setAnimationDuration:1.0];
+    [button.imageView setAnimationRepeatCount:round(_audioPlayer.duration)];
+    [button.imageView startAnimating];
+    
+    [_audioPlayer play];
+}
+
+//放大图片
+- (void)scaleImage:(NSString *)imagePath
+{
+    UIImage *image = [UIImage imageWithContentsOfFile:imagePath];
+    if(image == nil){
+        [SVProgressHUD showErrorWithStatus:@"图片已损坏, 无法打开"];
+    }else{
+        self.navigationController.navigationBarHidden = YES;
+        UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+        button.frame = self.view.bounds;
+        button.backgroundColor = [UIColor darkGrayColor];
+        [button setImage:image forState:UIControlStateNormal];
+        [button addTarget:self action:@selector(didScaleImageClicked:) forControlEvents:UIControlEventTouchUpInside];
+        [self.view addSubview:button];
+    }
+}
+//点击放大后的图片回到原来样子
+- (void)didScaleImageClicked:(UIButton *)sender
+{
+    self.navigationController.navigationBarHidden = NO;
+    [sender removeFromSuperview];
+}
+
+#pragma mark - 语音播放代理方法
+- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag
+{
+    if(flag){
+        [_lastPlayButton setImage:_lastPlayButton.imageView.image forState:UIControlStateNormal];
+    }
+}
+
 @end

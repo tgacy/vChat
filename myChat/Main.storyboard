@@ -443,6 +443,9 @@
                                                     <state key="highlighted" backgroundImage="ReceiverTextNodeBkgHL">
                                                         <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
                                                     </state>
+                                                    <connections>
+                                                        <action selector="didMessageBtnClicked:" destination="zG1-gj-L7O" eventType="touchUpInside" id="AAX-TK-CtC"/>
+                                                    </connections>
                                                 </button>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1st-yZ-uoz">
                                                     <rect key="frame" x="20" y="20" width="42" height="42"/>
@@ -453,6 +456,9 @@
                                                     <state key="normal" backgroundImage="head-1">
                                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                                     </state>
+                                                    <connections>
+                                                        <action selector="didHeadBtnClicked:" destination="zG1-gj-L7O" eventType="touchUpInside" id="a1H-qO-grC"/>
+                                                    </connections>
                                                 </button>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="time" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jai-Lf-F6a">
                                                     <rect key="frame" x="110" y="75" width="28" height="17"/>
@@ -494,6 +500,9 @@
                                                     <state key="normal" backgroundImage="head-1">
                                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                                     </state>
+                                                    <connections>
+                                                        <segue destination="Muh-EF-aP9" kind="show" identifier="showMyInfoSegue" id="yYM-AX-N6X"/>
+                                                    </connections>
                                                 </button>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" buttonType="roundedRect" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="soh-qe-4gH">
                                                     <rect key="frame" x="464" y="20" width="66" height="61"/>
@@ -510,6 +519,9 @@
                                                     <state key="highlighted" backgroundImage="SenderTextNodeBkgHL">
                                                         <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
                                                     </state>
+                                                    <connections>
+                                                        <action selector="didMessageBtnClicked:" destination="zG1-gj-L7O" eventType="touchUpInside" id="2ZO-zU-Fwy"/>
+                                                    </connections>
                                                 </button>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="time" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bFr-wL-brA">
                                                     <rect key="frame" x="464" y="75" width="28" height="17"/>
@@ -556,6 +568,7 @@
                     <connections>
                         <outlet property="chatListTableview" destination="X8y-fE-PUo" id="utI-yQ-bPO"/>
                         <outlet property="messager" destination="fHL-rI-FUJ" id="0DW-XI-S3l"/>
+                        <segue destination="3Ty-RJ-BP6" kind="show" identifier="showFriendInfoSegue" id="xuU-NZ-7tP"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4Pj-h4-v6X" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1513,5 +1526,7 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="Cm0-xn-k88"/>
+        <segue reference="xuU-NZ-7tP"/>
+        <segue reference="yYM-AX-N6X"/>
     </inferredMetricsTieBreakers>
 </document>
