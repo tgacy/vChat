@@ -317,6 +317,19 @@
 {
     MyLog(@"发送文件失败: %@", error);
     [SVProgressHUD showErrorWithStatus:[error localizedDescription]];
+    if([sender.outgoingFileDescription isEqualToString:@"image"]){
+        NSString *filePath = sender.outgoingFileName;
+        NSString *imagePath = [kDocumentDirectory stringByAppendingPathComponent:filePath];
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSFileManager *manager = [NSFileManager defaultManager];
+            if([manager fileExistsAtPath:imagePath]){
+                [manager removeItemAtPath:imagePath error:nil];
+            }
+        });
+    }else if([sender.outgoingFileDescription hasPrefix:@"record"]){
+        [_audioRecoder deleteRecording];
+    }
 }
 
 - (void)xmppOutgoingFileTransferDidSucceed:(XMPPOutgoingFileTransfer *)sender
@@ -327,8 +340,9 @@
     //发送消息
     NSString *filePath = sender.outgoingFileName;
     TCMessage *message = [[TCMessage alloc] init];
-    if([sender.outgoingFileDescription isEqualToString:@"image"])
+    if([sender.outgoingFileDescription isEqualToString:@"image"]){
         message.body = [kSendedImageStr stringByAppendingString:filePath];
+    }
     else if([sender.outgoingFileDescription hasPrefix:@"record"]){
         NSString *timeStr = [[sender.outgoingFileDescription componentsSeparatedByString:@"@"] lastObject];
         message.body = [kSendedRecordStr stringByAppendingFormat:@"%@@%@", timeStr, filePath];
